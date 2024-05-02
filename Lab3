@@ -1,0 +1,99 @@
+// Author: Riley Olfert
+// Date Created: 2024-05-01
+// File Name: Lab3
+// Description: Motor Control Program for Siemens S7-1200 PLC
+
+"FIVESEC" := T#5S;
+"FOURSEC" := T#4S;
+"THREESEC" := T#3S;
+"ZEROSEC" := T#0S;
+
+"IEC_Timer_0_DB".TOF(IN:="MF_1",
+                     PT:="FIVESEC",
+                     Q=>"MF_1_tout",
+                     ET=> "ZEROSEC");
+
+"IEC_Timer_0_DB_1".TOF(IN:="MR_1",
+                       PT:="FIVESEC",
+                       Q=> "MR_1_tout",
+                       ET=> "ZEROSEC");
+
+"IEC_Timer_0_DB_2".TON(IN := "reverse_in",
+                       PT := "THREESEC",
+                       Q => "reverse_out",
+                       ET => "ZEROSEC");
+
+"IEC_Timer_0_DB_3".TON(IN:="forward_in",
+                       PT:="THREESEC",
+                       Q=>"forward_out",
+                       ET=>"ZEROSEC");
+
+"IEC_Timer_0_DB_4".TON(IN:="MF_1",
+                       PT:="FOURSEC",
+                       Q=>"MF_1_4S",
+                       ET=>"ZEROSEC");
+
+"IEC_Timer_0_DB_5".TON(IN:="MR_1",
+                       PT:="FOURSEC",
+                       Q=>"MR_1_4S",
+                       ET=>"ZEROSEC");
+
+
+
+"MotorOff" := (NOT "MF_1_tout") AND (NOT "MR_1_tout");
+
+IF (NOT "HS_1") THEN
+    "JAH_1" := FALSE;
+    "TAH_1" := FALSE;
+    "reverse_in" := FALSE;
+    "reverse_out" := FALSE;
+    "forward_in" := FALSE;
+    "forward_out" := FALSE;
+    "MF_1" := FALSE;
+    "MR_1" := FALSE;
+
+ELSIF "TAH_1" OR "JAH_1" THEN
+    "reverse_in" := FALSE;
+    "reverse_out" := FALSE;
+    "forward_in" := FALSE;
+    "forward_out" := FALSE;
+    "MF_1" := FALSE;
+    "MR_1" := FALSE;
+ELSIF (NOT "TSH_1") THEN
+    "TAH_1" := TRUE;
+ELSIF ("MF_1_4S" OR "MR_1_4S") AND (NOT "JSH_1") THEN
+    "JAH_1" := TRUE;
+ELSIF "MotorOff" THEN
+    IF "HS_2" THEN
+        "MF_1" := TRUE;
+    ELSE
+        "MF_1" := FALSE;
+    END_IF;
+    
+    IF "HS_3" THEN
+        "MR_1" := TRUE;
+    ELSE
+        "MR_1" := FALSE;
+    END_IF;
+ELSIF "MF_1" AND "HS_3" THEN
+    "MF_1" := FALSE;
+    "forward_in" := FALSE;
+    "forward_out" := FALSE;
+    "reverse_in" := TRUE;
+ELSIF "reverse_out" AND (NOT "HS_2") THEN
+    "MR_1" := TRUE;
+ELSIF "MR_1" AND "HS_2" THEN
+    "MR_1" := FALSE;
+    "reverse_in" := FALSE;
+    "reverse_out" := FALSE;
+    "forward_in" := TRUE;
+ELSIF "forward_out" AND (NOT "HS_3") THEN
+    "MF_1" := TRUE;
+ELSE
+    "reverse_in" := "reverse_in";
+    "reverse_out" := "reverse_out";
+    "forward_in" := "forward_in";
+    "forward_out" := "forward_out";
+    "MF_1" := "MF_1";
+    "MR_1" := "MR_1";
+END_IF;
