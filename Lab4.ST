@@ -22,7 +22,7 @@
 
 IF "toggle" THEN
     "togglevar" := NOT "togglevar";
-    "Timer".TON(IN := FALSE, PT:="ONESEC");
+    "Timer".TON(IN := FALSE, PT:="timing");
 END_IF;
 
 IF "risingEdge" THEN
