@@ -1,13 +1,11 @@
 // Author: Riley Olfert
 // Date Created: 2024-05-01
-// File Name: Lab4.ST
+// File Name: Lab4
 // Description: Motor Control Program for Siemens S7-1200 PLC
 "P0" := 0.3535 * "Pot0" + 100;
 
 "ZEROSEC" := T#0S;
 "timing" := INT_TO_TIME("P0");
-"ONESEC" := T#1S;
-"HMS" := T#100mS;
 
 "Timer".TON(IN:=TRUE,
             PT:="timing",
@@ -15,13 +13,12 @@
             ET=>"ZEROSEC");
 
 // Detecting rising edge of pushbutton
-"risingEdge" := ("HS_1"AND NOT"HS_1_last");
+"risingEdge" := ("HS_1" AND NOT "HS_1_last");
 
 // Update lastButtonState for next cycle
 "HS_1_last" := "HS_1";
 
 IF "toggle" THEN
-    "togglevar" := NOT "togglevar";
     "Timer".TON(IN := FALSE, PT:="timing");
 END_IF;
 
@@ -31,7 +28,6 @@ END_IF;
 
 IF "reset" THEN
     "dir" := TRUE;
-    "togglevar" := FALSE;
     "circle0" := TRUE;
     "circle1" := TRUE;
     "circle2" := TRUE;
@@ -102,3 +98,4 @@ IF "reset" THEN
         "circle1" := "circle1";
         "circle0" := "circle0";
     END_IF;
+
