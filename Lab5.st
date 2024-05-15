@@ -9,6 +9,16 @@
 "pump1_last" := "pump1";
 "pump2_last" := "pump2";
 "level_last" := "level";
+"primsec_last" := "primsec";
+
+IF "level" < 70 AND "level" > 50 AND ("pump1" > 0 OR "pump2" > 0) AND "flag" = 0 THEN
+    "flag" := 1;
+END_IF;
+
+IF "flag" = 1 AND ("pump1" = 0 OR "pump2" = 0) THEN
+    "flag" := 0;
+    "primsec" := NOT "primsec";
+END_IF;
 
 IF "level" <= 30 AND "primsec" THEN
     "pump1" := 100;
@@ -19,7 +29,7 @@ ELSIF "level" > 30 AND "level" <= 50  AND "primsec" THEN
 ELSIF (NOT ("pump1_last" = 0)) AND "level" > 50 AND "level" < 70  AND "primsec" THEN
     "pump1" := 160 - 2 * "level";
     "p1_disp" := 160 - 2 * "level_disp";
-    "primsec" := 0;
+   // "primsec" := 0;
 ELSIF (NOT ("pump1_last" = 0)) AND "level" >= 70 AND "level" <= 80  AND "primsec" THEN
     "pump1" := 20;
     "p1_disp" := 20;
@@ -53,7 +63,7 @@ ELSIF (NOT ("pump2_last" = 0)) AND "level" > 30 AND "level" < 70 AND "primsec" T
     "p2_disp" := 160 - 2 * "level_disp";
 ELSIF (NOT ("pump2_last" = 0)) AND "level" >= 70 AND "level" <= 80 AND "primsec" THEN
     "pump2" := 20;
-    "p2_disp" := 160 - 2 * "level_disp";
+    "p2_disp" := 20;
 ELSIF "level" > 80 AND "primsec" THEN
     "pump2" := 0;
     "p2_disp" := 0;
@@ -67,7 +77,7 @@ ELSIF "level" > 30 AND "level" <= 50  AND NOT "primsec" THEN
 ELSIF (NOT ("pump2_last" = 0)) AND "level" > 50 AND "level" < 70  AND NOT "primsec" THEN
     "pump2" := 160 - 2 * "level";
     "p2_disp" := 160 - 2 * "level_disp";
-    "primsec" := 1;
+    //"primsec" := 1;
     
 ELSIF (NOT ("pump2_last" = 0)) AND "level" >= 70 AND "level" <= 80  AND NOT "primsec" THEN
     "pump2" := 20;
@@ -108,4 +118,6 @@ ELSIF (NOT ("pump2" = 0)) AND "pump2_last" = 0 THEN
 ELSE
     "p2_count" := "p2_count";
 END_IF;
+
+
 
